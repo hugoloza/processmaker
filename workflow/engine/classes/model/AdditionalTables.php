@@ -109,7 +109,11 @@ class AdditionalTables extends BaseAdditionalTables
         $oDataset->setFetchmode(ResultSet::FETCHMODE_ASSOC);
 
         while ($oDataset->next()) {
-            $this->fields[] = $oDataset->getRow();
+        	$auxField = $oDataset->getRow();
+        	if ($auxField['FLD_TYPE'] == 'TIMESTAMP') {
+        		$auxField['FLD_TYPE'] = 'DATETIME';
+        	}
+        	$this->fields[] = $auxField;
         }
 
         return $this->fields;
@@ -412,6 +416,9 @@ class AdditionalTables extends BaseAdditionalTables
             }
             $stringOr .= ');';
             eval($stringOr);
+
+            $oCriteriaCount = clone $oCriteria;
+            eval('$count = ' . $sClassPeerName . '::doCount($oCriteria);');
         }
 
         if (isset($_POST['sort'])) {
